@@ -64,4 +64,4 @@ need to tell the $event object that your arguments are editable by other parts o
 				)
 			);
 
->> Note: **you cannot add new arguments after the event object has been created**.
+> Note: **you cannot add new arguments after the event object has been created**.
