@@ -47,7 +47,7 @@ Inside the callback:
 		}
 	}
 
-The latter method is preferred  as it allows you to modify arguments.  However to do that you
+The latter method is reccomended & preferred.  However to do that you
 need to tell the $event object that your arguments are editable by other parts of the app:
 
 	// Later on...
@@ -63,5 +63,3 @@ need to tell the $event object that your arguments are editable by other parts o
 					TRUE
 				)
 			);
-
-> Note: **you cannot add new arguments after the event object has been created**.

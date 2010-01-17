@@ -17,21 +17,20 @@ Class Dispatcher_Event Implements ArrayAccess, Countable
 	protected $arguments = array();
 
 	/**
-	 * Flag for whether or not arguments are editable by callbacks
-	 * Should only be settable by constructor
-	 * @var bool
+	 * The original arguments for this event
+	 * 
+	 * @var array
 	 */
-	protected $arguments_mutable = FALSE;
+	protected $_original_arguments = array();
 
 	/**
 	 * Constructor
 	 *
 	 * @param array $arguments Arguments for this event
 	 */
-	public function __construct(array $arguments = array(), $arguments_mutable = FALSE)
+	public function __construct(array $arguments = array())
 	{
-		$this->arguments			= $arguments;
-		$this->arguments_mutable	= (bool) $arguments_mutable;
+		$this->arguments = $this->_original_arguments = $arguments;
 	}
 
 	/**
@@ -44,9 +43,34 @@ Class Dispatcher_Event Implements ArrayAccess, Countable
 	 * @param  string $var Name of var to get
 	 * @return mixed       Variable's value
 	 */
-	public function __get($var)
+	public function &__get($var)
 	{
+		if($var[0] === '_')
+		{
+			throw new Kohana_Exception('Cannot access protected member variable :var', array(':var' => $var));
+		}
+
 		return $this->$var;
+	}
+
+	/**
+	 * Gets all the arguments
+	 * 
+	 * @return array
+	 */
+	public function arguments()
+	{
+		return $this->arguments;
+	}
+
+	/**
+	 * Checks to see if the event's arguments have been changed
+	 *
+	 * @return boolean
+	 */
+	public function changed()
+	{
+		return $this->arguments !== $this->_original_arguments;
 	}
 
 	/**
@@ -97,16 +121,6 @@ Class Dispatcher_Event Implements ArrayAccess, Countable
 	 */
 	public function offsetSet($offset, $value)
 	{
-		if( ! $this->arguments_mutable)
-		{
-			throw new Kohana_Exception('Cannot modify argument :arg of read only event', array(':arg' => $offset));
-		}
-
-		if( ! isset($this->arguments[$offset]))
-		{
-			throw new Kohana_Exception('Cannot add arguments to an event once it has been created');
-		}
-
 		$this->arguments[$offset] = $value;
 	}
 

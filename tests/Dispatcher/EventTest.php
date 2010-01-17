@@ -14,12 +14,11 @@ Class Dispatcher_EventTest extends PHPUnit_Framework_TestCase
 	 *
 	 * @test
 	 */
-	public function testNewInstanceHasNoArgumentsAndNotEditable()
+	public function testNewInstanceHasNoArguments()
 	{
 		$event = new Dispatcher_Event();
 
 		$this->assertAttributeSame(array(), 'arguments', $event);
-		$this->assertAttributeSame(FALSE, 'arguments_mutable', $event);
 	}
 
 	/**
@@ -31,8 +30,7 @@ Class Dispatcher_EventTest extends PHPUnit_Framework_TestCase
 	{
 		$event = new Dispatcher_Event(array('bob' => 'dylan'));
 
-		$this->assertSame(FALSE, $event->arguments_mutable);
-		$this->assertSame(array('bob' => 'dylan'), $event->arguments);
+		$this->assertSame(array('bob' => 'dylan'), $event->arguments());
 	}
 
 	/**
@@ -52,24 +50,11 @@ Class Dispatcher_EventTest extends PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * You shouldn't be able to edit arguments of a read only event
-	 *
-	 * @test
-	 * @expectedException Kohana_Exception
-	 */
-	public function testCantEditArgumentsOfANonEditableEvent()
-	{
-		$event = new Dispatcher_Event(array('a' => 'cow', 'jumps' => 'over'));
-
-		$event['the'] = 'moon';
-	}
-
-	/**
 	 * We should be able to edit arguments of an editable event
 	 * 
 	 * @test
 	 */
-	public function testCanChangeArgumentsOfAnEditableEvent()
+	public function testCanChangeArgumentsOfAnEvent()
 	{
 		$event = new Dispatcher_Event(array('a' => 'cow', 'jumps' => 'over'), TRUE);
 
@@ -78,19 +63,6 @@ Class Dispatcher_EventTest extends PHPUnit_Framework_TestCase
 		$this->assertTrue(isset($event['a']));
 		$this->assertSame('person', $event['a']);
 		$this->assertAttributeSame(array('a' => 'person', 'jumps' => 'over'), 'arguments', $event);
-	}
-
-	/**
-	 * The arguments that are defined at creation are the only ones allowed
-	 * 
-	 * @test
-	 * @expectedException Kohana_Exception
-	 */
-	public function testCannotAddArgumentsOnceEventIsCreated()
-	{
-		$event = new Dispatcher_Event(array(), TRUE);
-
-		$event['foo'] = 'bar';
 	}
 
 	/**
@@ -104,5 +76,54 @@ Class Dispatcher_EventTest extends PHPUnit_Framework_TestCase
 		$event = new Dispatcher_Event(array('a' => 'cow', 'jumps' => 'over'), TRUE);
 
 		unset($event['jumps']);
+	}
+
+	/**
+	 * A new event should not be flagged as changed
+	 *
+	 * @test
+	 */
+	public function testNewEventIsUnchanged()
+	{
+		$event = new Dispatcher_Event(array('foo' => 'bar'));
+
+		$this->assertFalse($event->changed());
+	}
+
+	/**
+	 * A new event without any arguments should not be classed as changed
+	 *
+	 * @test
+	 */
+	public function testEventWithoutArgumentsIsUnchanged()
+	{
+		$event = new Dispatcher_Event();
+
+		$this->assertFalse($event->changed());
+	}
+
+	/**
+	 * Once an argument has been edited, an event should be marked as changed
+	 */
+	public function testModifyingAnArgumentMarksEventChanged()
+	{
+		$event = new Dispatcher_Event(array('pie' => 'sky'));
+
+		$event['pie'] = 'lie';
+
+		$this->assertTrue($event->changed());
+	}
+
+	/**
+	 * We shouldn't be able to access protected attributes (i.e. those starting with an underscore)
+	 *
+	 * @test
+	 * @expectedException Kohana_Exception
+	 */
+	public function testCannotAccessProtectedAttributes()
+	{
+		$event = new Dispatcher_Event;
+
+		$event->_original_arguments;
 	}
 }
