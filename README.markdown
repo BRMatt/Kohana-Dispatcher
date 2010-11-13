@@ -47,19 +47,4 @@ Inside the callback:
 		}
 	}
 
-The latter method is reccomended & preferred.  However to do that you
-need to tell the $event object that your arguments are editable by other parts of the app:
-
-	// Later on...
-	Dispatcher::instance()
-		// Calls Misc_Class::callback();
-		->trigger_event
-			(
-				'post.pre_publish',
-				// Pass TRUE as second parameter to allow the app to modify the arguments
-				Dispatcher::event
-				(
-					array('argument_name' => 'value'),
-					TRUE
-				)
-			);
+The latter method is reccomended & preferred.
