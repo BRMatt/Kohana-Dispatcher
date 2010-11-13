@@ -57,9 +57,9 @@ Class Dispatcher Implements Dispatcher_Dispatchable
 	 * @param array $arguments
 	 * @return Dispatcher_Event
 	 */
-	static function event(array $arguments = array(), $arguments_editable = FALSE)
+	static function event(array $arguments = array())
 	{
-		return new Dispatcher_Event($arguments, $arguments_editable);
+		return new Dispatcher_Event($arguments);
 	}
 
 	/**
@@ -120,9 +120,10 @@ Class Dispatcher Implements Dispatcher_Dispatchable
 	/**
 	 * Triggers event
 	 * 
-	 * @param  string            $event_name  Event to trigger
-	 * @param  Dispatcher_Event  $event       Event Object
-	 * @return Dispatcher_Event               The Event object, after modification
+	 * @param  string            $event_name      Event to trigger
+	 * @param  Dispatcher_Event  $event           Event Object
+	 * @param  boolean           $halt_on_success Stop processing the event if a callback returns TRUE?
+	 * @return Dispatcher_Event                   The Event object, after modification
 	 */
 	public function trigger_event($event_name, Dispatcher_Event $event, $halt_on_success = FALSE)
 	{
